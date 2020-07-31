@@ -13,13 +13,16 @@ totalAmountWon=0
 totalAmountLost=0
 numOfDaysWon=0
 numOfDaysLost=0
-
+noOfWins=0
+noOfLoss=0
 echo "WELCOME TO GAMBLER GAME"
 
 #loops till maximum days
-for (( day=0; day<=MAXIMUM_DAYS; day++))
+for (( day=1; day<=MAXIMUM_DAYS; day++))
 do 
 	stakeAmount=$STAKE
+	noOfWins=0
+	noOfLoss=0
 	#Loops until stake amount is reached minimum amount or maximum amount
 	while [ $stakeAmount -gt $MINIMUM_AMOUNT -a $stakeAmount -lt $MAXIMUM_AMOUNT ]
 	do
@@ -28,11 +31,16 @@ do
 		then
 			#if random is 1 stake amount is incremented by 1
 			stakeAmount=$(($stakeAmount+$BET_AMOUNT))
+			((noOfWins++))
 		else
 			#if random is 0 stake amount is decremented by 1
-			stakeAmount=$(($stakeAmount-$BET_AMOUNT))  
+			stakeAmount=$(($stakeAmount-$BET_AMOUNT))
+			((noOfLoss++))  
 		fi
 	done
+
+	winArray[$day]=$noOfWins
+	lossArray[$day]=$noOfLoss
 
 	if [ $stakeAmount -eq $MAXIMUM_AMOUNT ]
 	then
@@ -49,8 +57,31 @@ do
 
 		totalAmountLost=$(($numOfDaysLost*$PERCENTAGE_STAKE))  
 		echo "Total amount Lost after " $day "day" $totalAmountLost 
-	fi 
+	fi
 done
 echo "Gambler won "  $numOfDaysWon "days"
 echo "Gambler lost " $numOfDaysLost "days"
+echo  ${winArray[@]}
+echo  ${lossArray[@]}
+luckyDayAmount=${winArray[1]}
+for (( i=1; i<${#winArray[@]}; i++ ))
+do
+	if [ ${winArray[i]} -gt  $luckyDayAmount ]
+	then
+		luckyDayAmount=${winArray[i]}
+		luckyDay=$i
+	fi
+done
 
+echo "Lucky Day ="$luckyDay "with amount" $luckyDayAmount
+
+unluckyDayAmount=${lossArray[1]}
+for (( i=1; i<${#lossArray[@]}; i++ ))
+do
+	if [ ${lossArray[i]} -gt  $unluckyDayAmount ]
+	then
+		unluckyDayAmount=${lossArray[i]}
+		unluckyDay=$i
+	fi
+done
+echo "unlucky Day ="$unluckyDay "with amount" $unluckyDayAmount
