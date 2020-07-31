@@ -16,7 +16,7 @@ numOfDaysLost=0
 noOfWins=0
 noOfLoss=0
 echo "WELCOME TO GAMBLER GAME"
-
+function  gambler(){
 #loops till maximum days
 for (( day=1; day<=MAXIMUM_DAYS; day++))
 do 
@@ -48,40 +48,65 @@ do
 	else
 		((numOfDaysLost++))
 	fi
+done
+}
 
-	#calculates total amount won or lost after 21 days
-	if [ $day -gt 20 ]
+function totalAmountCalculation() {
+	if [ $numOfDaysWon -gt $numOfDaysLost ]
 	then
 		totalAmountWon=$(($numOfDaysWon*$PERCENTAGE_STAKE)) 
-		echo "Total amount won after "  $day "day" $totalAmountWon
-
+		echo "Total amount won " $totalAmountWon
+	else
 		totalAmountLost=$(($numOfDaysLost*$PERCENTAGE_STAKE))  
-		echo "Total amount Lost after " $day "day" $totalAmountLost 
+		echo "Total amount Lost " $totalAmountLost 
 	fi
-done
-echo "Gambler won "  $numOfDaysWon "days"
-echo "Gambler lost " $numOfDaysLost "days"
-echo  ${winArray[@]}
-echo  ${lossArray[@]}
-luckyDayAmount=${winArray[1]}
-for (( i=1; i<${#winArray[@]}; i++ ))
-do
-	if [ ${winArray[i]} -gt  $luckyDayAmount ]
-	then
-		luckyDayAmount=${winArray[i]}
-		luckyDay=$i
-	fi
-done
+}
+function calulatesLuckyAndUnluckyDay() {
+	echo  ${winArray[@]}
+	echo  ${lossArray[@]}
+	luckyDayAmount=${winArray[1]}
+	for (( i=1; i<${#winArray[@]}; i++ ))
+	do
+		if [ ${winArray[i]} -gt  $luckyDayAmount ]
+		then
+			luckyDayAmount=${winArray[i]}
+			luckyDay=$i
+		fi
+	done
 
-echo "Lucky Day ="$luckyDay "with amount" $luckyDayAmount
+	echo "Lucky Day ="$luckyDay "with amount" $luckyDayAmount
 
-unluckyDayAmount=${lossArray[1]}
-for (( i=1; i<${#lossArray[@]}; i++ ))
-do
-	if [ ${lossArray[i]} -gt  $unluckyDayAmount ]
-	then
-		unluckyDayAmount=${lossArray[i]}
-		unluckyDay=$i
+	unluckyDayAmount=${lossArray[1]}
+	for (( i=1; i<${#lossArray[@]}; i++ ))
+	do
+		if [ ${lossArray[i]} -gt  $unluckyDayAmount ]
+		then
+			unluckyDayAmount=${lossArray[i]}
+			unluckyDay=$i
 	fi
-done
-echo "unlucky Day ="$unluckyDay "with amount" $unluckyDayAmount
+	done
+	echo "unlucky Day ="$unluckyDay "with amount" $unluckyDayAmount
+}
+function playAgain(){
+	if [ $numOfDaysWon -gt $numOfDaysLost ]
+	then
+		echo "Your eligible to play next month"
+		read -p "Enter y if you want to play again otherwise enter n" choice
+		if [ $choice == "y" ]
+		then
+			gambler
+			totalAmountCalculation
+			calulatesLuckyAndUnluckyDay
+		else
+			echo "OK BYE"
+		fi
+	else
+		echo "Your not eligible to play next month"
+	fi
+}
+gambler
+echo "Gambler won "  $numOfDaysWon "days" 
+echo "Gambler Lost "  $numOfDaysLost "days"
+totalAmountCalculation
+calulatesLuckyAndUnluckyDay
+playAgain
