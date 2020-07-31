@@ -51,4 +51,6 @@ do
 		echo "Total amount Lost after " $day "day" $totalAmountLost 
 	fi 
 done
+echo "Gambler won "  $numOfDaysWon "days"
+echo "Gambler lost " $numOfDaysLost "days"
 
